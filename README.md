@@ -1,2 +1,2 @@
 # Delta
- A personal discord bot written in discord.js.
+ A personal Discord bot created with discord.js.
