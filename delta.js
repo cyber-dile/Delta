@@ -10,17 +10,6 @@ Delta.Packages.Builder = require('@discordjs/builders')
 Delta.Packages.DiscordAPITypes = require('discord-api-types/v9')
 Delta.Packages.DiceRoller = require('rpg-dice-roller')
 
-Delta.Initialize = []
-Delta.InteractionMixins = []
-Delta.ReactionMixins = []
-Delta.MessageMixins = []
-
-Delta.Commands = require("./modules/commands.js")
-Delta.Data = require("./modules/data.js")
-Delta.Evaluate = require("./modules/evaluate.js")
-Delta.Modules = require("./modules/modules.js")
-Delta.Resolve = require("./modules/resolve.js")
-
 const { Client, Intents } = Delta.Packages.Discord;
 const { REST } = Delta.Packages.REST
 Delta.Flags = [
@@ -43,55 +32,63 @@ Delta.Flags = [
 Delta.Client = new Client({intents: Delta.Flags});
 Delta.REST = new REST({ version: '9' }).setToken(process.env.token);
 
-Delta.mixin = (...funcs) => {
-    return (...args) => {
-        for (f in funcs) {
+class FunctionArray {
+    list = []
+    constructor(...new_list) {
+        this.list = new_list
+    }
+    execute(...args) {
+        for (var f of this.list) {
             f(...args)
         }
     }
 }
+Delta.FunctionArray = FunctionArray
+
+Delta.Initialize = []
+Delta.on_ready = new FunctionArray()
+Delta.on_interaction = new FunctionArray()
+Delta.on_message = new FunctionArray()
+Delta.on_reaction = new FunctionArray()
 
 Delta.Client.on('ready', () => {
-  console.log(`Delta is now online.`);
-
-  for (i = 0; i < Delta.Initialize.length; i++) {
-      Delta.Initialize[i].init()
-  }
+    Delta.on_ready.execute()
 });
-
 Delta.Client.on('interactionCreate', async interaction => {
-    for (i = 0; i < Delta.InteractionMixins.length; i++) {
-        var value = Delta.InteractionMixins[i]
-        if (value(interaction)) {
-            return
-        }
-    }
+    Delta.on_interaction.execute(interaction)
 });
-
 Delta.Client.on('messageCreate', async message => {
-    for (i = 0; i < Delta.MessageMixins.length; i++) {
-        var value = Delta.MessageMixins[i]
-        if (value(message)) {
-            return
-        }
-    }
+    Delta.on_message.execute(message)
 })
-
 Delta.Client.on('messageReactionAdd', async reaction => {
-    for (i = 0; i < Delta.ReactionMixins.length; i++) {
-        var value = Delta.ReactionMixins[i]
-        if (value(reaction, true)) {
-            return
-        }
-    }
+    Delta.on_reaction.execute(reaction, true)
 })
 Delta.Client.on('messageReactionRemove', async reaction => {
-    for (i = 0; i < Delta.ReactionMixins.length; i++) {
-        var value = Delta.ReactionMixins[i]
-        if (value(reaction, false)) {
-            return
-        }
+    Delta.on_reaction.execute(reaction, false)
+})
+
+Delta.on_ready.list.push(async () => {
+    console.log(`Delta is now online.`);
+
+    for (var i = 0; i < Delta.Initialize.length; i++) {
+        Delta.Initialize[i].init()
+    }
+    var guilds = Array.from((await Delta.Client.guilds.fetch()).values())
+    for (server of guilds) {
+        Delta.Commands.register(server)
     }
 })
+
+Delta.Commands = require("./modules/commands.js")
+Delta.Data = require("./modules/data.js")
+Delta.Evaluate = require("./modules/evaluate.js")
+Delta.Modules = require("./modules/modules.js")
+Delta.Resolve = require("./modules/resolve.js")
+
+Delta.Modules.load("Base", "base")
+// Delta.Modules.load("Channels", "channels")
+// Delta.Modules.load("Corkboard", "corkboard")
+// Delta.Modules.load("Role", "role")
+// Delta.Modules.load("Support", "support")
 
 Delta.Client.login(process.env.TOKEN);
