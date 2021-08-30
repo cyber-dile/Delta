@@ -1,3 +1,5 @@
+const { DefaultUserAgent } = require('@discordjs/rest')
+
 require('dotenv').config()
 
 var Delta = {}
@@ -31,6 +33,14 @@ Delta.Flags = [
 ]
 Delta.Client = new Client({intents: Delta.Flags});
 Delta.REST = new REST({ version: '9' }).setToken(process.env.token);
+
+process.on('unhandledRejection', error => {
+	console.log('Unhandled promise rejection:', error);
+});
+
+Delta.init_server = async (server) => {
+    Delta.Commands.register(server)
+}
 
 class FunctionArray {
     list = []
@@ -66,6 +76,9 @@ Delta.Client.on('messageReactionAdd', async reaction => {
 Delta.Client.on('messageReactionRemove', async reaction => {
     Delta.on_reaction.execute(reaction, false)
 })
+Delta.Client.on('guildCreate', async guild => {
+    Delta.init_server(guild)
+})
 
 Delta.on_ready.list.push(async () => {
     console.log(`Delta is now online.`);
@@ -75,7 +88,7 @@ Delta.on_ready.list.push(async () => {
     }
     var guilds = Array.from((await Delta.Client.guilds.fetch()).values())
     for (server of guilds) {
-        Delta.Commands.register(server)
+        Delta.init_server(server)
     }
 })
 
