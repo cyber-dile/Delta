@@ -4,7 +4,7 @@ module.exports = Command
 Command.rank = 7
 Command.name = "spoof"
 Command.alias = []
-Command.desc = "[7 - OWNER] Sends a message as the bot."
+Command.desc = "Sends a message as the bot."
 
 Command.execute = async (interaction, data_override) => {
     var message = interaction.options.getString("message")
@@ -30,10 +30,10 @@ Command.filter = async (guild) => {
     return true
 }
 
-Command.register = async (guild) => {
+Command.register = async (guild, prefix) => {
     var { SlashCommandBuilder } = Delta.Packages.Builder
 
-    var cmd = new SlashCommandBuilder().setName(Command.name).setDescription(Command.desc)
+    var cmd = new SlashCommandBuilder().setName(Command.name).setDescription(prefix + Command.desc)
     cmd.addStringOption(option =>
 		option.setName('message')
 			.setDescription('The message that should be sent')

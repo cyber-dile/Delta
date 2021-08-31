@@ -34,9 +34,11 @@ Commands.register = async (server) => {
     var parsed_commands = []
     var { Routes } = Delta.Packages.DiscordAPITypes
 
-    for (command of Commands.list) {
+    for (var i = 0; i < Commands.list.length; i++) {
+        var command = Commands.list[i]
+        var prefix = "[" + command.rank + " - " + (await Delta.Resolve.get_rank_name(command.rank)) + "] "
         if (!command.filter || (await command.filter(server))) {
-            var commands = await command.register(server)
+            var commands = await command.register(server, prefix)
             if (commands) {
                 if (Array.isArray(commands)) {
                     for (cmd of commands) {

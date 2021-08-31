@@ -4,7 +4,7 @@ module.exports = Command
 Command.rank = 0
 Command.name = "rank"
 Command.alias = []
-Command.desc = "[1 - USER] Shows you your rank."
+Command.desc = "Shows you your rank."
 
 var descs = [
     "You're blocked from Delta. You can't use any commands in the bot.",
@@ -36,10 +36,10 @@ Command.filter = async (guild) => {
     return true
 }
 
-Command.register = async (guild) => {
+Command.register = async (guild, prefix) => {
     var { SlashCommandBuilder } = Delta.Packages.Builder
 
-    var cmd = new SlashCommandBuilder().setName(Command.name).setDescription(Command.desc)
+    var cmd = new SlashCommandBuilder().setName(Command.name).setDescription(prefix + Command.desc)
 
     return cmd
 }

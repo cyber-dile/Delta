@@ -4,7 +4,7 @@ module.exports = Command
 Command.rank = 7
 Command.name = "eval"
 Command.alias = []
-Command.desc = "[7 - OWNER] Runs Javascript code."
+Command.desc = "Runs Javascript code."
 
 Command.execute = async (interaction, data_override) => {
     var code = interaction.options.getString("code")
@@ -22,10 +22,10 @@ Command.filter = async (guild) => {
     return true
 }
 
-Command.register = async (guild) => {
+Command.register = async (guild, prefix) => {
     var { SlashCommandBuilder } = Delta.Packages.Builder
 
-    var cmd = new SlashCommandBuilder().setName(Command.name).setDescription(Command.desc)
+    var cmd = new SlashCommandBuilder().setName(Command.name).setDescription(prefix + Command.desc)
     cmd.addStringOption(option =>
 		option.setName('code')
 			.setDescription('The JavaScript code that should be executed')
