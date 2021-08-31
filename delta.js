@@ -88,7 +88,10 @@ Delta.on_ready.list.push(async () => {
     for (var i = 0; i < Delta.Initialize.length; i++) {
         Delta.Initialize[i].init()
     }
-    var guilds = Array.from((await Delta.Client.guilds.fetch()).values())
+    var guilds = (await Delta.Client.guilds.fetch()).values()
+    for (server of guilds) {
+        Delta.init_server(server)
+    }
 })
 
 Delta.Commands = require("./modules/commands.js")
