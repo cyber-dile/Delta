@@ -38,8 +38,10 @@ process.on('unhandledRejection', error => {
 	console.log('Unhandled promise rejection:', error);
 });
 
-Delta.init_server = async (server) => {
-    Delta.Commands.register(server)
+Delta.init_server = async (server, cmds) => {
+    if (cmds) {
+        Delta.Commands.register(server)
+    }
 }
 
 class FunctionArray {
@@ -87,9 +89,6 @@ Delta.on_ready.list.push(async () => {
         Delta.Initialize[i].init()
     }
     var guilds = Array.from((await Delta.Client.guilds.fetch()).values())
-    for (server of guilds) {
-        Delta.init_server(server)
-    }
 })
 
 Delta.Commands = require("./modules/commands.js")

@@ -53,7 +53,6 @@ Commands.register = async (server) => {
 
     try {
         await Delta.REST.put(Routes.applicationGuildCommands(Delta.Client.application.id, server.id), {body: parsed_commands})
-        console.log("Slash commands successfully updated for " + server.name + " (" + server.id + ").")
     } catch (err) {
         console.log(err)
     }
