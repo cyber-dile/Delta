@@ -18,6 +18,7 @@ var descs = [
 ]
 
 Command.execute = async (interaction, data_override) => {
+    var ud = await Delta.Data.User.get(interaction.user.id)
     var rank = await Delta.Data.Ranks.get_rank(interaction.user, interaction.guild)
     var name = await Delta.Resolve.get_rank_name(rank)
     var desc = descs[rank]
@@ -29,7 +30,7 @@ Command.execute = async (interaction, data_override) => {
         .setDescription(desc)
         .setFooter("Delta", Delta.Client.user.displayAvatarURL())
     
-    await interaction.reply({ephemeral: true, embeds: [embed]})
+    await interaction.reply({ephemeral: ud.settings.ephemeral[0], embeds: [embed]})
 }
 
 Command.filter = async (guild) => {

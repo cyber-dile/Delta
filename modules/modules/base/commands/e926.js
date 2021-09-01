@@ -64,9 +64,10 @@ Command.display = async (interaction, id) => {
 }
 
 Command.execute = async (interaction, data_override) => {
+    var ud = Delta.Data.User.get(interaction.user.id)
     var tags = interaction.options.getString("tags")
     if (data_override) {if (data_override.tags) {tags = data_override.tags}}
-    await interaction.reply("` Looking up your tags... `")
+    await interaction.reply({content: "` Looking up your tags... `", ephemeral: ud.settings.public_ephemeral[0]})
 
     Command.lookup(tags, async response => {
         var posts = response.posts

@@ -8,7 +8,11 @@ User.cache = {}
 User.default_data = {
     BLOCKED: false,
     OWNER: false,
-    PROMOTED: false
+    PROMOTED: false,
+    settings: {
+        ephemeral: [true, "boolean"],
+        public_ephemeral: [false, "boolean"]
+    }
 }
 
 User.get = (id) => {

@@ -7,6 +7,10 @@ Server.default_data = {
     settings: {
         promoted_role: [false, "role"],
         staff_role: [false, "role"]
+    },
+    misc: {
+        nsfw: [false, "boolean"],
+        all_channels_nsfw: [false, "boolean"]
     }
 }
 

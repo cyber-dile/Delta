@@ -10,7 +10,7 @@ Resolve.get_number = async (resolvable) => {
 }
 
 Resolve.get_boolean = async (resolvable) => {
-    resolvable = get_string(resolvable)
+    resolvable = await Resolve.get_string(resolvable)
     resolvable = resolvable.toLowerCase().substring(0,1)
     return resolvable == "t" || resolvable == "y"
 }

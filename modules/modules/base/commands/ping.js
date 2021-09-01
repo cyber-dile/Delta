@@ -7,7 +7,8 @@ Command.alias = []
 Command.desc = "Displays information about the bot's connectivity."
 
 Command.execute = async (interaction, data_override) => {
-    await interaction.reply({content: "` Pong! `", ephemeral: true})
+    var ud = await Delta.Data.User.get(interaction.user.id)
+    await interaction.reply({content: "` Pong! `", ephemeral: ud.settings.ephemeral[0]})
 }
 
 Command.filter = async (guild) => {

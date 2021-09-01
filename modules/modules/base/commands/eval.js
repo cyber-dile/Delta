@@ -7,9 +7,10 @@ Command.alias = []
 Command.desc = "Runs Javascript code."
 
 Command.execute = async (interaction, data_override) => {
+    var ud = await Delta.Data.User.get(interaction.user.id)
     var code = interaction.options.getString("code")
     if (data_override) {if (data_override.code) {code = data_override.code}}
-    await interaction.reply({content: "` Evaluating code... `", ephemeral: true})
+    await interaction.reply({content: "` Evaluating code... `", ephemeral: ud.settings.ephemeral[0]})
     try {
         eval(code)
         await interaction.editReply({content: "` Code executed successfully! `"})

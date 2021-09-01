@@ -1,1 +1,1 @@
-{"settings":{"promoted_role":[false,"role"],"staff_role":[false,"role"]},"nsfw":true,"all_channels_nsfw":true}
+{"settings":{"promoted_role":[false,"role"],"staff_role":[false,"role"]},"misc":{"nsfw":[true,"boolean"],"all_channels_nsfw":[true,"boolean"]}}
