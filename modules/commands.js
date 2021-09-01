@@ -5,20 +5,26 @@ Commands.list = []
 Commands.cache = {}
 
 Commands.execute = async (interaction, data_override) => {
-    if (!interaction.isCommand()) return
-
-    var cmd = Commands.cache[interaction.commandName]
-    if (cmd != null) {
-        var rank = await Delta.Data.Ranks.get_rank(interaction.user, interaction.guild)
-        if (rank >= cmd.rank) {
-            cmd.execute(interaction, data_override)
+    if (interaction.isCommand()) {
+        var cmd = Commands.cache[interaction.commandName]
+        if (cmd != null) {
+            var rank = await Delta.Data.Ranks.get_rank(interaction.user, interaction.guild)
+            if (rank >= cmd.rank) {
+                cmd.execute(interaction, data_override)
+            } else {
+                var your_name = await Delta.Resolve.get_rank_name(rank)
+                var cmd_name = await Delta.Resolve.get_rank_name(cmd.rank)
+                await interaction.reply({content: "` You can't use this command- you're rank [" + rank + " - " + your_name + "], but this command needs rank [" + cmd.rank + " - " + cmd_name + "]! `", ephemeral: true})
+            }
         } else {
-            var your_name = await Delta.Resolve.get_rank_name(rank)
-            var cmd_name = await Delta.Resolve.get_rank_name(cmd.rank)
-            await interaction.reply({content: "` You can't use this command- you're rank [" + rank + " - " + your_name + "], but this command needs rank [" + cmd.rank + " - " + cmd_name + "]! `", ephemeral: true})
+            await interaction.reply({content: "` Something happened, and that command couldn't be ran! `", ephemeral: true})
         }
-    } else {
-        await interaction.reply({content: "` Something happened, and that command couldn't be ran! `", ephemeral: true})
+    } else if (interaction.isButton()) {
+        var original = interaction.message.interaction
+        var cmd = Commands.cache[original.commandName]
+        if (typeof(cmd) != "undefined" && cmd.button) {
+            cmd.button(interaction, original, data_override)
+        }
     }
 }
 

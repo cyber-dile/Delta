@@ -16,8 +16,8 @@ Resolve.get_boolean = async (resolvable) => {
 }
 
 Resolve.get_user = async (resolvable, server) => {
-    if (typeof(resolvable) == "object" & resolvable instanceof Delta.Packages.Discord.GuildMember) {return resolvable.user}
-    if (typeof(resolvable) == "object" & resolvable instanceof Delta.Packages.Discord.User) {return resolvable}
+    if (typeof(resolvable) == "object" && resolvable instanceof Delta.Packages.Discord.GuildMember) {return resolvable.user}
+    if (typeof(resolvable) == "object" && resolvable instanceof Delta.Packages.Discord.User) {return resolvable}
     if (server) {
         var u = await server.members.fetch(resolvable)
         if (u) {return u.user}
@@ -31,14 +31,14 @@ Resolve.get_user = async (resolvable, server) => {
 }
 
 Resolve.get_guild_member = async (resolvable, server) => {
-    if (typeof(resolvable) == "object" & resolvable instanceof Delta.Packages.Discord.GuildMember) {return resolvable}
+    if (typeof(resolvable) == "object" && resolvable instanceof Delta.Packages.Discord.GuildMember) {return resolvable}
     if (!server) {return}
     var user = Resolve.get_user(resolvable, server)
     if (user) {return (await server.users.fetch(user.id))}
 }
 
 Resolve.get_channel = async (resolvable, server) => {
-    if (typeof(resolvable) == "object" & resolvable instanceof Delta.Packages.Discord.Channel) {return resolvable}
+    if (typeof(resolvable) == "object" && resolvable instanceof Delta.Packages.Discord.Channel) {return resolvable}
     if (server) {
         var c = (await server.channels.fetch(resolvable))
         if (c) {return c}
@@ -52,7 +52,7 @@ Resolve.get_channel = async (resolvable, server) => {
 }
 
 Resolve.get_role = async (resolvable, server) => {
-    if (typeof(resolvable) == "object" & resolvable instanceof Delta.Packages.Discord.Role) {return resolvable}
+    if (typeof(resolvable) == "object" && resolvable instanceof Delta.Packages.Discord.Role) {return resolvable}
     if (!server) {return}
     var r = (await server.roles.fetch(resolvable))
     if (r) {return r}
@@ -63,7 +63,7 @@ Resolve.get_role = async (resolvable, server) => {
 }
 
 Resolve.get_guild = async (resolvable) => {
-    if (typeof(resolvable) == "object" & resolvable instanceof Delta.Packages.Discord.Guild) {return resolvable}
+    if (typeof(resolvable) == "object" && resolvable instanceof Delta.Packages.Discord.Guild) {return resolvable}
     var g = (await Delta.Client.guilds.fetch(resolvable))
     if (g) {return g}
 }
