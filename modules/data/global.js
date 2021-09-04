@@ -3,8 +3,12 @@ const Delta = require("../../delta")
 var Global = {}
 module.exports = Global
 
-Global.data = {}
-Global.loaded = true
+Global.data = {
+    settings: {
+        error_channel: [false, "channel"]
+    }
+}
+Global.loaded = false
 
 Global.get = () => {
     if (!Global.loaded) {
@@ -20,4 +24,11 @@ Global.get = () => {
 
 Global.save = () => {
     Delta.Data.save("./save_data/global_data/data.json", Global.get())
+}
+
+Global.log = async (message) => {
+    try {
+        var c = await Delta.Client.channels.fetch(Global.get().settings.error_channel[0])
+        c.send(message)
+    } catch (err) {}
 }

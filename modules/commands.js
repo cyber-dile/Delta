@@ -1,6 +1,8 @@
 var Commands = {}
 module.exports = Commands
 
+Commands.module_list = []
+
 Commands.list = []
 Commands.cache = {}
 
@@ -66,9 +68,17 @@ Commands.register = async (server) => {
     }
 }
 
+Commands.load_commands = () => {
+    Commands.list = []
+    Commands.cache = {}
+    for (f of Commands.module_list) {
+        f()
+    }
+}
+
 Delta.on_interaction.list.push(Commands.execute)
 Delta.Initialize.push(Commands)
 
 Commands.init = async () => {
-
+    Commands.load_commands()
 }

@@ -9,7 +9,7 @@ Command.alias = []
 Command.desc = "Lets you change your settings."
 
 Command.execute = async (interaction, data_override) => {
-    var sd = await Delta.Data.User.get(interaction.user.id)
+    var sd = Delta.Data.User.get(interaction.user.id)
     var setting = interaction.options.getString("setting")
     var value = interaction.options.getString("value")
     if (data_override) {

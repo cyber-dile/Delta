@@ -1,0 +1,1 @@
+"if (interaction.isButton()) { interaction.update(interaction.user.toString() + \" pet him :)\");}"

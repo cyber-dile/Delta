@@ -35,8 +35,17 @@ Delta.Client = new Client({intents: Delta.Flags});
 Delta.REST = new REST({ version: '9' }).setToken(process.env.token);
 
 process.on('unhandledRejection', error => {
-	console.log('Unhandled promise rejection:', error);
+    var {MessageEmbed} = Delta.Packages.Discord
+    var embed = new MessageEmbed()
+        .setTitle("Unhandled Promise Rejection")
+        .setDescription(error.toString())
+    Delta.Data.Global.log(embed)
 });
+
+
+Delta.time = () => {
+    return Date.now() / 1000
+}
 
 Delta.init_server = async (server, cmds) => {
     if (cmds) {
@@ -82,6 +91,18 @@ Delta.Client.on('guildCreate', async guild => {
     Delta.init_server(guild)
 })
 
+Delta.Commands = require("./modules/commands.js")
+Delta.Data = require("./modules/data.js")
+Delta.Evaluate = require("./modules/evaluate.js")
+Delta.Modules = require("./modules/modules.js")
+Delta.Resolve = require("./modules/resolve.js")
+
+Delta.Modules.load("Base", "base")
+// Delta.Modules.load("Channels", "channels")
+// Delta.Modules.load("Corkboard", "corkboard")
+// Delta.Modules.load("Role", "role")
+// Delta.Modules.load("Support", "support")
+
 Delta.on_ready.list.push(async () => {
     console.log(`Delta is now online.`);
 
@@ -94,16 +115,12 @@ Delta.on_ready.list.push(async () => {
     }
 })
 
-Delta.Commands = require("./modules/commands.js")
-Delta.Data = require("./modules/data.js")
-Delta.Evaluate = require("./modules/evaluate.js")
-Delta.Modules = require("./modules/modules.js")
-Delta.Resolve = require("./modules/resolve.js")
+Delta.on_ready.list.push(Delta.Evaluate.startup)
+Delta.on_message.list.push(Delta.Evaluate.message)
+Delta.on_reaction.list.push(Delta.Evaluate.reaction)
+Delta.on_interaction.list.push(Delta.Evaluate.interaction)
 
-Delta.Modules.load("Base", "base")
-// Delta.Modules.load("Channels", "channels")
-// Delta.Modules.load("Corkboard", "corkboard")
-// Delta.Modules.load("Role", "role")
-// Delta.Modules.load("Support", "support")
+setInterval(Delta.Evaluate.time, 1000)
+setInterval(Delta.Evaluate.automatic, 10000)
 
 Delta.Client.login(process.env.TOKEN);

@@ -1,5 +1,3 @@
-const Delta = require("../delta")
-
 var Data = {}
 module.exports = Data
 
@@ -68,6 +66,20 @@ Data.iterate_js = (dir, callback) => {
     }
 }
 
+Data.iterate_load = (dir, callback) => {
+    var fs = require("fs")
+    for (filename of fs.readdirSync(dir)) {
+        callback(filename, Data.load(dir + filename))
+    }
+}
+
+Data.iterate_save = (dir, cache) => {
+    var fs = require("fs")
+    for (index in cache) {
+        Data.save(dir + index + ".json", cache[index])
+    }
+}
+
 Delta.Initialize.push(Data)
 Data.init = () => {
     Data.create_dir("./save_data/")
@@ -75,4 +87,15 @@ Data.init = () => {
     Data.create_dir("./save_data/server_data/")
     Data.create_dir("./save_data/global_data/")
     Data.create_dir("./save_data/misc/")
+    Data.create_dir("./save_data/misc/eval/")
+    Data.create_dir("./save_data/misc/eval/message/")
+    Data.create_dir("./save_data/misc/eval/reaction/")
+    Data.create_dir("./save_data/misc/eval/reaction/channels/")
+    Data.create_dir("./save_data/misc/eval/reaction/messages/")
+    Data.create_dir("./save_data/misc/eval/interaction/")
+    Data.create_dir("./save_data/misc/eval/interaction/channels/")
+    Data.create_dir("./save_data/misc/eval/interaction/messages/")
+    Data.create_dir("./save_data/misc/eval/auto/")
+    Data.create_dir("./save_data/misc/eval/time/")
+    Data.create_dir("./save_data/misc/eval/startup/")
 }
