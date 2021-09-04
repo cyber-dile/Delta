@@ -21,9 +21,11 @@ Commands.execute = async (interaction, data_override) => {
         }
     } else if (interaction.isButton()) {
         var original = interaction.message.interaction
-        var cmd = Commands.cache[original.commandName]
-        if (typeof(cmd) != "undefined" && cmd.button) {
-            cmd.button(interaction, original, data_override)
+        if (original && original.commandName) {
+            var cmd = Commands.cache[original.commandName]
+            if (typeof(cmd) != "undefined" && cmd.button) {
+                cmd.button(interaction, original, data_override)
+            }
         }
     }
 }
