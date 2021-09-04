@@ -60,7 +60,7 @@ Command.register = async (guild, prefix) => {
     var cmd = new SlashCommandBuilder().setName(Command.name).setDescription(prefix + Command.desc)
     cmd.addSubcommand(scd =>
         scd.setName("set")
-            .setDescription("Sets a setting to a value")
+            .setDescription(prefix + "Sets a setting to a value")
             .addStringOption(option =>
                 option.setName('setting')
                     .setDescription('The setting to change.')
@@ -69,7 +69,7 @@ Command.register = async (guild, prefix) => {
                 option.setName('value')
                     .setDescription('The value to change a setting to.')
                     .setRequired(true))
-    ).addSubcommand(scd => scd.setName("get").setDescription("Gets a list of all the settings"))
+    ).addSubcommand(scd => scd.setName("get").setDescription(prefix + "Gets a list of all the settings"))
 
     return cmd
 }

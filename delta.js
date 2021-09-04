@@ -38,8 +38,17 @@ process.on('unhandledRejection', error => {
     var {MessageEmbed} = Delta.Packages.Discord
     var embed = new MessageEmbed()
         .setTitle("Unhandled Promise Rejection")
-        .setDescription(error.toString())
-    Delta.Data.Global.log(embed)
+        .setDescription(error.toString() + "\n`" + error.stack + "`")
+        .setFooter("Delta", Delta.Client.user.displayAvatarURL())
+    Delta.Data.Global.log({embeds: [embed]})
+});
+process.on('uncaughtException', error => {
+    var {MessageEmbed} = Delta.Packages.Discord
+    var embed = new MessageEmbed()
+        .setTitle("Unhandled Promise Rejection")
+        .setDescription(error.toString() + "\n`" + error.stack + "`")
+        .setFooter("Delta", Delta.Client.user.displayAvatarURL())
+    Delta.Data.Global.log({embeds: [embed]})
 });
 
 

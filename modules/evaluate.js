@@ -8,6 +8,7 @@ Evaluate.interaction_messages = {} // id -> function
 Evaluate.interaction_channels = {} // id -> function
 Evaluate.time_stamps = {} // id -> [time, function]
 Evaluate.auto_execs = {} // id -> function
+Evaluate.startup = {} // id -> function
 
 Evaluate.message = async (message) => {
     if (Evaluate.message_channels[message.id]) {
@@ -25,8 +26,10 @@ Evaluate.reaction = async (reaction, reacted) => {
 }
 
 Evaluate.interaction = async (interaction) => {
-    if (Evaluate.interaction_messages[interaction.message.id]) {
-        eval(Evaluate.interaction_messages[interaction.message.id])
+    if (interaction.message) {
+        if (Evaluate.interaction_messages[interaction.message.id]) {
+            eval(Evaluate.interaction_messages[interaction.message.id])
+        }
     }
     if (Evaluate.interaction_channels[interaction.channel.id]) {
         eval(Evaluate.interaction_channels[interaction.channel.id])
@@ -36,7 +39,8 @@ Evaluate.interaction = async (interaction) => {
 Evaluate.startup = async () => {
     Evaluate.load()
 
-    for (code of Evaluate.startup) {
+    for (index in Evaluate.startup) {
+        var code = Evaluate.startup[index]
         eval(code)
     }
 }
