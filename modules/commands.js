@@ -8,15 +8,19 @@ Commands.cache = {}
 
 Commands.execute = async (interaction, data_override) => {
     if (interaction.isCommand()) {
+        var sd = {perms: {}}
+        if (interaction.guild) {sd = Delta.Data.Server.get(interaction.guild.id)}
         var cmd = Commands.cache[interaction.commandName]
         if (cmd != null) {
+            var cmdrank = cmd.rank
+            if (sd && sd.perms[cmd.name]) {cmdrank = sd.perms[cmd.name]}
             var rank = await Delta.Data.Ranks.get_rank(interaction.user, interaction.guild)
-            if (rank >= cmd.rank) {
+            if (rank >= cmdrank) {
                 cmd.execute(interaction, data_override)
             } else {
                 var your_name = await Delta.Resolve.get_rank_name(rank)
-                var cmd_name = await Delta.Resolve.get_rank_name(cmd.rank)
-                await interaction.reply({content: "` You can't use this command- you're rank [" + rank + " - " + your_name + "], but this command needs rank [" + cmd.rank + " - " + cmd_name + "]! `", ephemeral: true})
+                var cmd_name = await Delta.Resolve.get_rank_name(cmdrank)
+                await interaction.reply({content: "` You can't use this command- you're rank [" + rank + " - " + your_name + "], but this command needs rank [" + cmdrank + " - " + cmd_name + "]! `", ephemeral: true})
             }
         } else {
             await interaction.reply({content: "` Something happened, and that command couldn't be ran! `", ephemeral: true})
@@ -26,7 +30,7 @@ Commands.execute = async (interaction, data_override) => {
         if (original && original.commandName) {
             var cmd = Commands.cache[original.commandName]
             if (typeof(cmd) != "undefined" && cmd.button) {
-                cmd.button(interaction, original, data_override)
+                cmd.button(interaction, original)
             }
         }
     }
@@ -41,12 +45,15 @@ Commands.add = (command) => {
 }
 
 Commands.register = async (server) => {
+    var sd = Delta.Data.Server.get(server.id)
     var parsed_commands = []
     var { Routes } = Delta.Packages.DiscordAPITypes
 
     for (var i = 0; i < Commands.list.length; i++) {
         var command = Commands.list[i]
-        var prefix = "[" + command.rank + " - " + (await Delta.Resolve.get_rank_name(command.rank)) + "] "
+        var cmdrank = command.rank
+        if (sd.perms[command.name]) {cmdrank = sd.perms[command.name]}
+        var prefix = "[" + cmdrank + " - " + (await Delta.Resolve.get_rank_name(cmdrank)) + "] "
         if (!command.filter || (await command.filter(server))) {
             var commands = await command.register(server, prefix)
             if (commands) {

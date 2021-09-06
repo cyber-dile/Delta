@@ -36,7 +36,10 @@ Resolve.get_guild_member = async (resolvable, server) => {
     if (typeof(resolvable) == "object" && resolvable instanceof Delta.Packages.Discord.GuildMember) {return resolvable}
     if (!server) {return}
     var user = await Resolve.get_user(resolvable, server)
-    try { if (user) {return (await server.users.fetch(user.id))} } catch (err) {}
+    if (user) {
+        var m = await server.members.fetch(user.id)
+        return m
+    }
     return false
 }
 
@@ -51,7 +54,7 @@ Resolve.get_channel = async (resolvable, server) => {
         var channel = channels.find(c => c.name.toLowerCase().substr(0, resolvable.length) == resolvable.toLowerCase())
         return channel
     } else {
-        return (await Delta.Client.channels.fetch(resolvable))
+        try {return (await Delta.Client.channels.fetch(resolvable))} catch(err) {}
     }
     return false
 }
@@ -67,6 +70,20 @@ Resolve.get_role = async (resolvable, server) => {
     var role = roles.find(c => c.name.toLowerCase().substr(0, resolvable.length) == resolvable.toLowerCase())
     return role
     return false
+}
+
+Resolve.get_emoji = async (resolvable) => {
+    if (typeof(resolvable) == "object" && resolvable instanceof Delta.Packages.Discord.Emoji) {return resolvable}
+    var filter = e => (resolvable.toString() == e.toString())
+    var result = Delta.Client.emojis.cache.find(filter)
+    if (result) {return result}
+    filter = e => (resolvable == e.id || e.name.toLowerCase() == resolvable.toLowerCase())
+    var result = Delta.Client.emojis.cache.find(filter)
+    if (result) {return result}
+    filter = e => (e.name.toLowerCase().substr(0, resolvable.length) == resolvable.toLowerCase())
+    var result = Delta.Client.emojis.cache.find(filter)
+    if (result) {return result}
+    return resolvable
 }
 
 Resolve.get_guild = async (resolvable) => {
@@ -111,18 +128,19 @@ Resolve.get_rank_name = async (resolvable) => {
 
 Resolve.get_type = async (resolvable, type, server) => {
     switch (type) {
-        case "string": return Resolve.get_string(resolvable)
-        case "number": return Resolve.get_number(resolvable)
-        case "boolean": return Resolve.get_boolean(resolvable)
-        case "user": return Resolve.get_user(resolvable, server)
-        case "guild_member": return Resolve.get_guild_member(resolvable, server)
-        case "channel": return Resolve.get_channel(resolvable, server)
-        case "role": return Resolve.get_role(resolvable, server)
-        case "guild": return Resolve.get_guild(resolvable)
-        case "rank": return Resolve.get_rank(resolvable)
-        case "rank_name": return Resolve.get_rank_name(resolvable)
+        case "string": return await Resolve.get_string(resolvable)
+        case "number": return await Resolve.get_number(resolvable)
+        case "boolean": return await Resolve.get_boolean(resolvable)
+        case "user": return await Resolve.get_user(resolvable, server)
+        case "guild_member": return await Resolve.get_guild_member(resolvable, server)
+        case "channel": return await Resolve.get_channel(resolvable, server)
+        case "role": return await Resolve.get_role(resolvable, server)
+        case "emoji": return await Resolve.get_emoji(resolvable)
+        case "guild": return await Resolve.get_guild(resolvable)
+        case "rank": return await Resolve.get_rank(resolvable)
+        case "rank_name": return await Resolve.get_rank_name(resolvable)
     }
     return false
 }
 
-Resolve.setting = async (setting, server) => await Resolve.get_type(setting[0], setting[1], server)
+Resolve.get_setting = async (setting, server) => await Resolve.get_type(setting[0], setting[1], server)

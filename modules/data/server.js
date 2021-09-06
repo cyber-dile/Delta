@@ -11,7 +11,8 @@ Server.default_data = {
     misc: {
         nsfw: [false, "boolean"],
         all_channels_nsfw: [false, "boolean"]
-    }
+    },
+    perms: {}
 }
 
 Server.get = (id) => {

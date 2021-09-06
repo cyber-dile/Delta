@@ -62,7 +62,7 @@ Data.load_cache = (cache, id, filepath, defaults) => {
 Data.iterate_js = (dir, callback) => {
     var fs = require("fs")
     for (filename of fs.readdirSync(dir)) {
-        callback(require.main.require("./modules/modules/base/commands/" + filename))
+        callback(require.main.require(dir + filename))
     }
 }
 

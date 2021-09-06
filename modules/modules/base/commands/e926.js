@@ -82,7 +82,7 @@ Command.execute = async (interaction, data_override) => {
     })
 }
 
-Command.button = async (button, interaction, data_override) => {
+Command.button = async (button, og) => {
     var id = interaction.id
     if (Command.results[id]) {
         switch (button.customId) {

@@ -35,17 +35,19 @@ Delta.Client = new Client({intents: Delta.Flags});
 Delta.REST = new REST({ version: '9' }).setToken(process.env.token);
 
 process.on('unhandledRejection', error => {
+    if (!Delta.Client.user) {console.log(error); return}
     var {MessageEmbed} = Delta.Packages.Discord
     var embed = new MessageEmbed()
-        .setTitle("Unhandled Promise Rejection")
+        .setTitle("Unhandled Rejection")
         .setDescription(error.toString() + "\n`" + error.stack + "`")
         .setFooter("Delta", Delta.Client.user.displayAvatarURL())
     Delta.Data.Global.log({embeds: [embed]})
 });
 process.on('uncaughtException', error => {
+    if (!Delta.Client.user) {console.log(error); return}
     var {MessageEmbed} = Delta.Packages.Discord
     var embed = new MessageEmbed()
-        .setTitle("Unhandled Promise Rejection")
+        .setTitle("Uncaught Exception")
         .setDescription(error.toString() + "\n`" + error.stack + "`")
         .setFooter("Delta", Delta.Client.user.displayAvatarURL())
     Delta.Data.Global.log({embeds: [embed]})
@@ -90,11 +92,20 @@ Delta.Client.on('interactionCreate', async interaction => {
 Delta.Client.on('messageCreate', async message => {
     Delta.on_message.execute(message)
 })
-Delta.Client.on('messageReactionAdd', async reaction => {
-    Delta.on_reaction.execute(reaction, true)
-})
-Delta.Client.on('messageReactionRemove', async reaction => {
-    Delta.on_reaction.execute(reaction, false)
+Delta.Client.on('raw', async packet => {
+    if (packet.t == "MESSAGE_REACTION_ADD" || packet.t == "MESSAGE_REACTION_REMOVE") {
+        var reacted = packet.t == "MESSAGE_REACTION_ADD"
+        var emoji
+        var channel = await Delta.Client.channels.fetch(packet.d.channel_id)
+        var message = await channel.messages.fetch(packet.d.message_id)
+        if (packet.d.emoji.id) {
+            emoji = Delta.Resolve.get_emoji(packet.d.emoji.id)
+        } else {
+            emoji = packet.d.emoji.name
+        }
+        var user = Delta.Client.users.fetch(packet.d.user_id)
+        Delta.on_reaction.execute(message, emoji, user, reacted)
+    }
 })
 Delta.Client.on('guildCreate', async guild => {
     Delta.init_server(guild)
@@ -107,8 +118,8 @@ Delta.Modules = require("./modules/modules.js")
 Delta.Resolve = require("./modules/resolve.js")
 
 Delta.Modules.load("Base", "base")
+Delta.Modules.load("Corkboard", "corkboard")
 // Delta.Modules.load("Channels", "channels")
-// Delta.Modules.load("Corkboard", "corkboard")
 // Delta.Modules.load("Role", "role")
 // Delta.Modules.load("Support", "support")
 
