@@ -52,7 +52,7 @@ Command.register = async (guild, prefix) => {
     var cmd = new SlashCommandBuilder().setName(Command.name).setDescription(prefix + Command.desc)
     cmd.addStringOption(option =>
 		option.setName('code')
-			.setDescription('The JavaScript code that should be executed. If set to \'next\', will evaluate the next command loaded.')
+			.setDescription('The JavaScript code that should be executed.')
 			.setRequired(true));
 
     return cmd
